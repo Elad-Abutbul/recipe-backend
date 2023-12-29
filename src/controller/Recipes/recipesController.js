@@ -21,7 +21,7 @@ export const recipesController = {
       const totalRecipesCount = await recipeModel.countDocuments(query);
       return res.json({ recipesId, totalRecipesCount });
     } catch (error) {
-      res.json(error);
+      console.error(error);
     }
   },
   getRecipeContent: async (req, res) => {
@@ -60,8 +60,8 @@ export const recipesController = {
       if (category !== "all-recipes") {
         query = { kosherType: category };
       }
-      const recipes = await recipeModel
-        .find({ "userOwner.id": id, ...query })
+      const recipesId = await recipeModel
+        .find({ "userOwner.id": id, ...query }, "_id")
         .skip((parsedPage - 1) * pageSize)
         .limit(pageSize);
 
@@ -69,9 +69,43 @@ export const recipesController = {
         .find({ "userOwner.id": id, ...query })
         .countDocuments();
 
-      return res.json({ recipes, totalRecipesCount });
+      return res.json({ recipesId, totalRecipesCount });
     } catch (error) {
       res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+  editRatingInComments: async (req, res) => {
+    const { userId, rating, recipeId } = req.body;
+    try {
+      const recipe = await recipeModel.findById(recipeId);
+      const userComment = recipe.comments.find(
+        (c) => c.user.id.toString() === userId
+      );
+      userComment.rating = rating;
+      await recipe.save();
+      res.json({ message: "Edit Rating In Comment Successfully Done" });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+
+  editComment: async (req, res) => {
+    try {
+      const { commentId, comment } = req.body;
+
+      const recipe = await recipeModel.findOne({ "comments._id": commentId });
+      const userComment = recipe.comments.find(
+        (c) => c._id.toString() === commentId
+      );
+      userComment.text = comment;
+      await recipe.save();
+
+      res.json({
+        message: "Comment updated successfully",
+      });
+    } catch (error) {
+      console.error(error);
     }
   },
 
@@ -81,7 +115,7 @@ export const recipesController = {
       await recipe.save();
       res.json({ message: "Recipe Created Successfully!" });
     } catch (error) {
-      res.json(error);
+      console.error(error);
     }
   },
 
@@ -97,7 +131,7 @@ export const recipesController = {
       await user.save();
       res.json({ message: "Recipe Saved Successfully" });
     } catch (error) {
-      res.json(error);
+      console.error(error);
     }
   },
   editRecipe: async (req, res) => {
@@ -111,11 +145,11 @@ export const recipesController = {
   },
   deleteOwnerRecipe: async (req, res) => {
     const { recipeId } = req.body;
-    if (recipeId) {
+    try {
       await recipeModel.findByIdAndDelete(recipeId);
       res.json({ message: "Recipe Deleted Successfully." });
-    } else {
-      res.json({ message: "Recipe Not Found." });
+    } catch (error) {
+      console.error(error);
     }
   },
   myRecipes: async (req, res) => {
@@ -124,7 +158,7 @@ export const recipesController = {
       const allUserRecipes = await recipeModel.find({ "userOwner.id": id });
       res.json({ allUserRecipes });
     } catch (error) {
-      res.json(error);
+      console.error(error);
     }
   },
   deleteSavedRecipe: async (req, res) => {
@@ -145,7 +179,7 @@ export const recipesController = {
       await user.save();
       return res.json({ message: "Recipe deleted successfully" });
     } catch (error) {
-      res.json(error);
+      console.error(error);
     }
   },
   savedRecipes: async (req, res) => {
@@ -155,13 +189,11 @@ export const recipesController = {
       const query = category === "all-recipes" ? {} : { kosherType: category };
       const user = await userModel.findById(id);
 
-      // Find saved recipes for the current page
       const savedRecipes = await recipeModel
         .find({ _id: { $in: user.savedRecipes }, ...query })
         .skip((page - 1) * pageSize)
         .limit(pageSize);
 
-      // Count all saved recipes that match the criteria
       const totalRecipesCount = await recipeModel.countDocuments({
         _id: { $in: user.savedRecipes },
         ...query,
@@ -170,12 +202,10 @@ export const recipesController = {
       res.json({ recipes: savedRecipes, totalRecipesCount });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ message: "Internal Server Error" });
     }
   },
-  rating: async (req, res) => {
+  changeRating: async (req, res) => {
     const { userId, recipeId, rating } = req.body;
-
     try {
       const existingRecipe = await recipeModel.findById(recipeId);
       const existingRatingIndex = existingRecipe.ratings.findIndex(
@@ -221,11 +251,10 @@ export const recipesController = {
     const { recipeId } = req.params;
     try {
       const recipe = await recipeModel.findById(recipeId);
-      const comments = recipe.comments; // Check if 'recipe.comments' contains the expected data
-      return res.json({ comments: comments }); // Return the actual comments
+      const comments = recipe.comments;
+      return res.json({ comments });
     } catch (error) {
       console.error(error);
-      return res.status(500).json({ error: "Internal Server Error" });
     }
   },
 
@@ -234,6 +263,12 @@ export const recipesController = {
     try {
       const user = await userModel.findById(userId);
       const recipe = await recipeModel.findById(recipeId);
+      const existingCommentIndex = recipe.comments.findIndex(
+        (existingComment) => existingComment.user.id.equals(user._id)
+      );
+      if (existingCommentIndex !== -1) {
+        return res.json({ message: "You Can Comment Once" });
+      }
 
       const userRating = recipe.ratings.find((rating) =>
         rating.userId.equals(user._id)

@@ -79,7 +79,6 @@ export const userController = {
       res.json({ recipesId: savedRecipesId, totalRecipesCount });
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal Server Error" });
     }
   },
 };

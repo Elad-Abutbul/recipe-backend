@@ -14,14 +14,14 @@ export const recipeSearchController = {
           { instruction: { $regex: new RegExp(input, "i") } },
         ],
       };
-      const recipes = await recipeModel
-        .find(query)
+      const recipesId = await recipeModel
+        .find(query, "_id")
         .skip((page - 1) * pageSize)
         .limit(pageSize);
 
       const totalRecipesCount = await recipeModel.countDocuments(query);
 
-      res.json({ recipes, totalRecipesCount });
+      res.json({ recipesId, totalRecipesCount });
     } catch (error) {
       console.error(error);
     }
@@ -35,10 +35,6 @@ export const recipeSearchController = {
       const skip = (page - 1) * pageSize;
 
       const user = await userModel.findById(id);
-      if (!user) {
-        return res.status(404).json({ message: "User not found" });
-      }
-
       const query = {
         _id: { $in: user.savedRecipes },
         $or: [
@@ -53,11 +49,11 @@ export const recipeSearchController = {
         query.kosherType = category;
       }
 
-      const recipes = await recipeModel.find(query).skip(skip).limit(pageSize);
+      const recipesId = await recipeModel.find(query,"_id").skip(skip).limit(pageSize);
 
       const totalRecipesCount = await recipeModel.countDocuments(query);
 
-      res.json({ recipes, totalRecipesCount });
+      res.json({ recipesId, totalRecipesCount });
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Internal Server Error" });
@@ -88,12 +84,12 @@ export const recipeSearchController = {
       if (category !== "all-recipes") {
         query.kosherType = category;
       }
-      const recipes = await recipeModel
-        .find(query)
+      const recipesId = await recipeModel
+        .find(query,"_id")
         .skip((page - 1) * pageSize)
         .limit(pageSize);
       const totalRecipesCount = await recipeModel.countDocuments(query);
-      res.json({ recipes, totalRecipesCount });
+      res.json({ recipesId, totalRecipesCount });
     } catch (error) {
       console.error(error);
     }

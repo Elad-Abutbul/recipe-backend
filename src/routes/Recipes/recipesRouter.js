@@ -13,11 +13,14 @@ router.put("/editRecipe", recipesController.editRecipe);
 router.delete("/delete/owner-recipe", recipesController.deleteOwnerRecipe);
 router.get("/my-recipes/:id", recipesController.myRecipes);
 router.delete("/delete/saved-recipe", recipesController.deleteSavedRecipe);
-router.post("/rating", recipesController.rating);
+router.post("/changeRating", recipesController.changeRating);
 router.get("/userStars/:recipeId/:userId", recipesController.userStars);
 router.get("/savedRecipes/:category/:page/:id", recipesController.savedRecipes);
 router.get("/comments/:recipeId", recipesController.comments);
 router.post("/comments/addComment", recipesController.addComment);
 router.get("/getRecipe/:id", recipesController.getRecipe);
 router.get("/content/:recipeId", recipesController.getRecipeContent);
+router.post("/editComment", recipesController.editComment);
+router.post("/editRatingInComments", recipesController.editRatingInComments);
+
 export { router as recipesRouter };
