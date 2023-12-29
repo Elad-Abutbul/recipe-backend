@@ -43,7 +43,9 @@ app.post("/register", async (req, res) => {
     }
   }
 });
-
+app.get('/', (req, res) => {
+  res.send("welcome to backend")
+})
 app.post("/login", async (req, res) => {
   const { password, username } = req.body;
   const user = await userModel.findOne({ username });
