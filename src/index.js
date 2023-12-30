@@ -44,7 +44,7 @@ app.post("/register", async (req, res) => {
   }
 });
 app.get('/', (req, res) => {
-  res.send("welcome to backend")
+  res.json({message:"welcome to recipe app backend"})
 })
 app.post("/login", async (req, res) => {
   const { password, username } = req.body;
