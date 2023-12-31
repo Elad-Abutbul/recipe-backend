@@ -2,8 +2,8 @@ import express from "express";
 import dotenv from "dotenv";
 import cors from "cors";
 import mongoose from "mongoose";
-import jwt from 'jsonwebtoken';
-import bcrypt from 'bcrypt';
+import jwt from "jsonwebtoken";
+import bcrypt from "bcrypt";
 import { PORT, mongoDBURL } from "../confing.js";
 import { verifyToken } from "./verifyToken/index.js";
 import { recipesRouter } from "./routes/Recipes/recipesRouter.js";
@@ -15,19 +15,23 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors({
-origin:["https://recipe-frontend-ten.vercel.app/"]
-}));
+app.use(
+  cors({
+    origin: ["https://recipe-frontend-ten.vercel.app/"],
+    methods: ["POST", "GET", "PUT", "DELETE"],
+    credentials: true,
+  })
+);
 app.use(express.json());
 
 app.use("/auth", usersRouter);
-app.use('/auth/search',usersSearchRouter)
+app.use("/auth/search", usersSearchRouter);
 app.use("/recipes", recipesRouter);
-app.use('/recipes/search',recipeSearchRouter)
+app.use("/recipes/search", recipeSearchRouter);
 
-app.get('/', (req, res) => {
-  res.json({message:"welcome to recipe app backend"})
-})
+app.get("/", (req, res) => {
+  res.json({ message: "welcome to recipe app backend" });
+});
 
 app.post("/register", async (req, res) => {
   const { username, password } = req.body;
@@ -64,7 +68,6 @@ app.post("/login", async (req, res) => {
 
   res.json({ token, user: { id: user._id, username: user.username } });
 });
-
 
 mongoose
   .connect(mongoDBURL)
