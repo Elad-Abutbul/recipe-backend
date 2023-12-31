@@ -15,7 +15,9 @@ dotenv.config();
 
 const app = express();
 
-app.use(cors());
+app.use(cors({
+origin:["https://recipe-frontend-ten.vercel.app/"]
+}));
 app.use(express.json());
 
 app.use("/auth", usersRouter);
