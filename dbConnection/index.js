@@ -1,5 +1,5 @@
 import mongoose from "mongoose";
-import { PORT, mongoDBURL } from "../../confing.js";
+import { PORT, mongoDBURL } from "../confing.js";
 import express from "express";
 const app = express();
 export const dbConnection = mongoose
