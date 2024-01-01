@@ -11,17 +11,20 @@ import { recipeSearchRouter } from "./routes/Recipes/recipesSearchRouter.js";
 import { usersRouter } from "./routes/Users/usersRouter.js";
 import { usersSearchRouter } from "./routes/Users/usersSearchRouter.js";
 import { userModel } from "./models/users.js";
+import { dbConnection } from "./dbConnection/index.js";
 dotenv.config();
 
 const app = express();
 
 app.use(
   cors({
-    origin: ["https://recipe-frontend-ten.vercel.app/"],
+    origin: '*',
     methods: ["POST", "GET", "PUT", "DELETE"],
     credentials: true,
   })
 );
+
+
 app.use(express.json());
 
 app.use("/auth", usersRouter);
@@ -69,12 +72,3 @@ app.post("/login", async (req, res) => {
   res.json({ token, user: { id: user._id, username: user.username } });
 });
 
-mongoose
-  .connect(mongoDBURL)
-  .then(() => {
-    console.log("App connected to database");
-    app.listen(PORT, () => {
-      console.log(`App is listening to port: ${PORT}`);
-    });
-  })
-  .catch((error) => console.log(error));
