@@ -1,5 +1,5 @@
 import { recipeModel } from "../../models/Recipes.js";
-import { userModel } from "../../models/users.js";
+import { userModel } from "../../models/Users.js";
 export const recipeSearchController = {
   searchHome: async (req, res) => {
     const { input } = req.body;

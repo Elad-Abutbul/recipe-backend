@@ -1,7 +1,7 @@
 import jwt from "jsonwebtoken";
 import bcrypt from "bcrypt";
 import { recipeModel } from "../../models/Recipes.js";
-import { userModel } from "../../models/users.js";
+import { userModel } from "../../models/Users.js";
 
 export const recipesController = {
   getRecipes: async (req, res) => {

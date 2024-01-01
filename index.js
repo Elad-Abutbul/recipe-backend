@@ -10,7 +10,7 @@ import { recipesRouter } from "./routes/Recipes/recipesRouter.js";
 import { recipeSearchRouter } from "./routes/Recipes/recipesSearchRouter.js";
 import { usersRouter } from "./routes/Users/usersRouter.js";
 import { usersSearchRouter } from "./routes/Users/usersSearchRouter.js";
-import { userModel } from "./models/users.js";
+import { userModel } from "./models/Users.js";
 dotenv.config();
 
 const app = express();
