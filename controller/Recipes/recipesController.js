@@ -27,16 +27,22 @@ export const recipesController = {
   getRecipeContent: async (req, res) => {
     const { recipeId } = req.params;
     try {
-      const recipeContent = await recipeModel
-        .findById(recipeId)
-        .select("name ingredients instruction cookingTime kosherType");
+      const recipeContent = await recipeModel.findById(recipeId)
       res.json({ recipeContent });
     } catch (error) {
       console.error(error);
     }
   },
-
-  getRecipe: async (req, res) => {
+  getFullRecipe: async (req, res) => {
+    const { id } = req.params;
+    try {
+      const recipe = await recipeModel.findById(id);
+      res.json({ recipe });
+    } catch (error) {
+      console.error(error);
+    }
+  },
+  getRecipeCard: async (req, res) => {
     const { id } = req.params;
     try {
       const recipe = await recipeModel
